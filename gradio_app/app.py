@@ -50,6 +50,9 @@ def bot(history, api_kind, table_name):
     if not query:
          gr.Warning("Please submit a non-empty string as a prompt")
          raise ValueError("Empty string was submitted")
+    if table_name not in tables:
+         gr.Warning(f"Table name {table_name} is incorrect")
+         raise ValueError(f"Table name {table_name} is incorrect")
 
     logger.warning('Retrieving documents...')
     # Retrieve documents relevant to query
@@ -105,18 +108,19 @@ with gr.Blocks() as demo:
         txt_btn = gr.Button(value="Submit text", scale=1)
 
     api_kind = gr.Radio(choices=["HuggingFace", "OpenAI"], value="HuggingFace")
+    table_name = gr.Radio(choices = list(sorted(tables.keys())), value = 'files_MiniLM')
 
     prompt_html = gr.HTML()
     # Turn off interactivity while generating if you click
     txt_msg = txt_btn.click(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(
-            bot, [chatbot, api_kind], [chatbot, prompt_html])
+            bot, [chatbot, api_kind, table_name], [chatbot, prompt_html])
 
     # Turn it back on
     txt_msg.then(lambda: gr.Textbox(interactive=True), None, [txt], queue=False)
 
     # Turn off interactivity while generating if you hit enter
     txt_msg = txt.submit(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(
-            bot, [chatbot, api_kind], [chatbot, prompt_html])
+            bot, [chatbot, api_kind, table_name], [chatbot, prompt_html])
 
     # Turn it back on
     txt_msg.then(lambda: gr.Textbox(interactive=True), None, [txt], queue=False)
