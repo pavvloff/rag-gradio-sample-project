@@ -14,7 +14,7 @@ import gradio as gr
 from jinja2 import Environment, FileSystemLoader
 
 from backend.query_llm import generate_hf, generate_openai
-from backend.semantic_search import table, retriever
+from backend.semantic_search import tables, retrievers
 
 VECTOR_COLUMN_NAME = ""
 TEXT_COLUMN_NAME = ""
@@ -43,7 +43,7 @@ def add_text(history, text):
     return history, gr.Textbox(value="", interactive=False)
 
 
-def bot(history, api_kind):
+def bot(history, api_kind, table_name):
     top_k_rank = 4
     query = history[-1][0]
 
@@ -55,8 +55,9 @@ def bot(history, api_kind):
     # Retrieve documents relevant to query
     document_start = perf_counter()
 
-    query_vec = retriever.encode(query)
-    documents = table.search(query_vec, vector_column_name=VECTOR_COLUMN_NAME).limit(top_k_rank).to_list()
+    retriever_name = table_name.split('_')[1]
+    query_vec = retrievers[retriever_name](query)
+    documents = tables[table_name].search(query_vec, vector_column_name=VECTOR_COLUMN_NAME).limit(top_k_rank).to_list()
     documents = [doc[TEXT_COLUMN_NAME] for doc in documents]
 
     document_time = perf_counter() - document_start
