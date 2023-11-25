@@ -16,8 +16,8 @@ from jinja2 import Environment, FileSystemLoader
 from backend.query_llm import generate_hf, generate_openai
 from backend.semantic_search import tables, retrievers
 
-VECTOR_COLUMN_NAME = ""
-TEXT_COLUMN_NAME = ""
+VECTOR_COLUMN_NAME = "embedding"
+TEXT_COLUMN_NAME = "text"
 
 proj_dir = Path(__file__).parent
 # Setting up the logging
