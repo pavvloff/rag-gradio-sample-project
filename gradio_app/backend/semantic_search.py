@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 # Enable multiple retrievers
 retrievers = {}
 
-def openai_embedding(text):
-  rs = openai.Embedding.create(input=[text], engine="text-embedding-ada-002")
-  return rs["data"][0]["embedding"]
+def openai_embedding(text, key = None):
+  rs = client.embeddings.create(input=[text], model="text-embedding-ada-002")
+  return rs.data[0].embedding
 
 minilm = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 gtelarge = SentenceTransformer('thenlper/gte-large')
