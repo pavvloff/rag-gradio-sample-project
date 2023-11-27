@@ -20,8 +20,8 @@ def openai_embedding(text, key = None):
 
 minilm = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 gtelarge = SentenceTransformer('thenlper/gte-large')
-retrievers['MiniLM'] = lambda t: minilm.encode(t)
-retrievers['GteLarge'] = lambda t: gtelarge.encode(t)
+retrievers['MiniLM'] = lambda t, key: minilm.encode(t)
+retrievers['GteLarge'] = lambda t, key: gtelarge.encode(t)
 retrievers['OpenAI'] = openai_embedding
 
 # db
