@@ -59,7 +59,7 @@ def bot(history, api_kind, table_name, openai_key):
     document_start = perf_counter()
 
     retriever_name = table_name.split('_')[1]
-    query_vec = retrievers[retriever_name](query)
+    query_vec = retrievers[retriever_name](query, openai_key)
     documents = tables[table_name].search(query_vec, vector_column_name=VECTOR_COLUMN_NAME).limit(top_k_rank).to_list()
     documents = [doc[TEXT_COLUMN_NAME] for doc in documents]
 
