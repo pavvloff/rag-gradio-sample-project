@@ -43,7 +43,7 @@ def add_text(history, text):
     return history, gr.Textbox(value="", interactive=False)
 
 
-def bot(history, api_kind, table_name):
+def bot(history, api_kind, table_name, openai_key):
     top_k_rank = 4
     query = history[-1][0]
 
@@ -73,7 +73,7 @@ def bot(history, api_kind, table_name):
     if api_kind == "HuggingFace":
          generate_fn = generate_hf
     elif api_kind == "OpenAI":
-         generate_fn = generate_openai
+         generate_fn = lambda prompt, history: generate_openai(prompt, history, key = openai_key)
     elif api_kind is None:
          gr.Warning("API name was not provided")
          raise ValueError("API name was not provided")
@@ -109,6 +109,7 @@ with gr.Blocks() as demo:
 
     api_kind = gr.Radio(choices=["HuggingFace", "OpenAI"], value="HuggingFace")
     table_name = gr.Radio(choices = list(sorted(tables.keys())), value = 'files_MiniLM')
+    openai_key = gr.Textbox(max_lines=1)
 
     prompt_html = gr.HTML()
     # Turn off interactivity while generating if you click
@@ -120,7 +121,7 @@ with gr.Blocks() as demo:
 
     # Turn off interactivity while generating if you hit enter
     txt_msg = txt.submit(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(
-            bot, [chatbot, api_kind, table_name], [chatbot, prompt_html])
+            bot, [chatbot, api_kind, table_name, openai_key], [chatbot, prompt_html])
 
     # Turn it back on
     txt_msg.then(lambda: gr.Textbox(interactive=True), None, [txt], queue=False)
