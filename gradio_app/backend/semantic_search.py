@@ -3,6 +3,7 @@ import lancedb
 import os
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
+import openai
 
 EMB_MODEL_NAME = ""
 DB_TABLE_NAME = ""
@@ -14,8 +15,26 @@ logger = logging.getLogger(__name__)
 # Enable multiple retrievers
 retrievers = {}
 
+import tiktoken
+
+def num_tokens_from_string(string: str, encoding_name: str = "cl100k_base") -> int:
+  """Returns the number of tokens in a text string."""
+  encoding = tiktoken.get_encoding(encoding_name)
+  num_tokens = len(encoding.encode(string))
+  return num_tokens
+
+def trim(text, length = 8190):
+  text = ' '.join(text.split()).replace('<|endoftext|>','')
+  while num_tokens_from_string(text) > length:
+    text = ' '.join(text.split()[:-10])
+  return text
+
 def openai_embedding(text, key = None):
-  rs = client.embeddings.create(input=[text], model="text-embedding-ada-002")
+  client = openai.OpenAI(
+      api_key=key,
+  )
+  trimmed = trim(t)
+  rs = client.embeddings.create(input=[trimmed], model="text-embedding-ada-002")
   return rs.data[0].embedding
 
 minilm = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
