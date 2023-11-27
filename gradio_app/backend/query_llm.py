@@ -2,6 +2,7 @@ import openai
 import gradio as gr
 
 from os import getenv
+import os
 from typing import Any, Dict, Generator, List
 
 from huggingface_hub import InferenceClient
@@ -100,7 +101,7 @@ def generate_hf(prompt: str, history: str, temperature: float = 0.9, max_new_tok
 
 
 def generate_openai(prompt: str, history: str, temperature: float = 0.9, max_new_tokens: int = 256,
-             top_p: float = 0.95, repetition_penalty: float = 1.0) -> Generator[str, None, str]:
+             top_p: float = 0.95, repetition_penalty: float = 1.0, key: str = None) -> Generator[str, None, str]:
     """
     Generate a sequence of tokens based on a given prompt and history using Mistral client.
 
@@ -116,6 +117,9 @@ def generate_openai(prompt: str, history: str, temperature: float = 0.9, max_new
         Generator[str, None, str]: A generator yielding chunks of generated text.
                                    Returns a final string if an error occurs.
     """
+
+    if key is not None:
+        os.environ["OPENAI_API_KEY"] = key
 
     temperature = max(float(temperature), 1e-2)  # Ensure temperature isn't too low
     top_p = float(top_p)
