@@ -118,8 +118,8 @@ def generate_openai(prompt: str, history: str, temperature: float = 0.9, max_new
                                    Returns a final string if an error occurs.
     """
 
-    if key is not None:
-        os.environ["OPENAI_API_KEY"] = key
+    if key is None:
+        key = getenv("OPENAI_API_KEY")
 
     temperature = max(float(temperature), 1e-2)  # Ensure temperature isn't too low
     top_p = float(top_p)
@@ -134,7 +134,10 @@ def generate_openai(prompt: str, history: str, temperature: float = 0.9, max_new
     formatted_prompt = format_prompt(prompt, "openai")
 
     try:
-        stream = openai.ChatCompletion.create(model="gpt-3.5-turbo-0301",
+        client = OpenAI(
+            api_key=key,
+        )
+        stream = client.chat.completions.create(model="gpt-3.5-turbo-0301",
                                                 messages=formatted_prompt, 
                                                 **generate_kwargs, 
                                                 stream=True)
