@@ -134,7 +134,7 @@ def generate_openai(prompt: str, history: str, temperature: float = 0.9, max_new
     formatted_prompt = format_prompt(prompt, "openai")
 
     try:
-        client = OpenAI(
+        client = openai.OpenAI(
             api_key=key,
         )
         stream = client.chat.completions.create(model="gpt-3.5-turbo-0301",
