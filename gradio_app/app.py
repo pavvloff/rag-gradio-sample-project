@@ -114,7 +114,7 @@ with gr.Blocks() as demo:
     prompt_html = gr.HTML()
     # Turn off interactivity while generating if you click
     txt_msg = txt_btn.click(add_text, [chatbot, txt], [chatbot, txt], queue=False).then(
-            bot, [chatbot, api_kind, table_name], [chatbot, prompt_html])
+            bot, [chatbot, api_kind, table_name, openai_key], [chatbot, prompt_html])
 
     # Turn it back on
     txt_msg.then(lambda: gr.Textbox(interactive=True), None, [txt], queue=False)
